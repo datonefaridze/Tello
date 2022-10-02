@@ -25,6 +25,10 @@ def detect_yolo(model, img):
 
 
 
+def show(img):
+    cv2.imshow("img", img)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 def detect_haarcascade(img):
     face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
