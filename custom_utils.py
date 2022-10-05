@@ -61,7 +61,7 @@ def detect_haarcascade(img):
 
 def draw_figures(img, centers):
     for center_ in centers:
-        print("center_:", center_)
+        # print("center_:", center_)
         center, bbox = center_
         start_point = bbox[0]
         end_point = bbox[1]

@@ -65,10 +65,10 @@ def main():
                 print(ave)
                 print('retry...')
 
-        drone.takeoff()
-        drone.up(30)
-        time.sleep(10)
-        drone.up(0)
+        # drone.takeoff()
+        # drone.up(30)
+        # time.sleep(10)
+        # drone.up(0)
         
         frame_skip = 300
         while True:
