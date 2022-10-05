@@ -10,6 +10,7 @@ import numpy
 import time
 from custom_utils import *
 import torch
+from detector import Detector
 
 width = 360
 max_fb = 0
@@ -49,6 +50,7 @@ model = torch.hub.load('yolov5', 'yolov5s', source='local', pretrained=True)
 
 def main():
     drone = tellopy.Tello()
+    first_frame=True
     try:
         drone.connect()
         drone.wait_for_connection(60.0)
@@ -62,9 +64,12 @@ def main():
             except av.AVError as ave:
                 print(ave)
                 print('retry...')
-        # print(len(container))
-        # skip first 300 frames
-        drone.takeoff()
+
+        # drone.takeoff()
+        # drone.up(30)
+        # time.sleep(10)
+        # drone.up(0)
+        
         frame_skip = 300
         while True:
             for frame in container.decode(video=0):
@@ -74,12 +79,28 @@ def main():
                 start_time = time.time()
                 image = cv2.cvtColor(numpy.array(frame.to_image()), cv2.COLOR_RGB2BGR)
                 img = cv2.resize(image, (360, 360))
+
                 # areas, centers = detect_haarcascade(img)
                 areas, centers = detect_yolo(model, img)
-                print("centers: ", centers)
                 # import pdb; pdb.set_trace()
+                if first_frame:
+                    rect = cv2.selectROI("select the area", img)
+                    first_frame = False
+                    print(rect)
+                    x1,y1,x2, y2=rect[0], rect[1], rect[2], rect[3]
+    
+                    img_crop=img[y1:y1+y2,x1:x1+x2]
+                    show(img_crop)
+                    detector = Detector(img_crop)
+                    first_frame = False
+                _, argmax, _ = detector(img, centers)
+                print("argmax: ", argmax)
+                print("centers: ", centers)
 
+                if argmax!=None:
+                    centers = [centers[argmax]]
                 img = draw_figures(img, centers)
+
                 fb, yaw = track_face(areas, centers)
                 drone.set_yaw(yaw)
                 if fb >0:
@@ -88,8 +109,6 @@ def main():
                     drone.backward(-fb)
                 print('yaw: ', yaw)
                 area_dist['area'].append(areas)
-                with open('readme.txt', 'a') as f:
-                    f.write(str(yaw) + '\n')
                 cv2.imshow('Original', img)
                 if cv2.waitKey(1) & 0xFF == ord('q'):
                     drone.land()
