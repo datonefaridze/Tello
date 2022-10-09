@@ -8,11 +8,7 @@ from custom_utils import *
 
 
 
-model = torch.hub.load('yolov5', 'yolov5s', source='local', pretrained=True)
-# img = cv2.imread(r"D:\WIN_20221004_18_16_31_Pro.jpg")
-# areas, centers = detect_yolo(model, img)
-
-# print("centers: ", centers)
+model = torch.hub.load('yolov5', 'yolov5x', source='local', pretrained=True)
 
 vid = cv2.VideoCapture(0)
 first_frame = True
@@ -33,7 +29,7 @@ detector = Detector(img_crop)
 
 while(True):
     ret, img = vid.read()
-    img = cv2.resize(img, (360,360))
+    img = cv2.resize(img, (750,750))
     areas, centers = detect_yolo(model, img)
     centers, _, argmax, _ = detector(img, centers)
     # print("argmax: ", argmax)

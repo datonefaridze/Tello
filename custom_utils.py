@@ -12,6 +12,7 @@ def detect_yolo(model, img):
     df_filtered = filter_detections(df)
     areas = []
     centers = []
+    # print("df_filtered: ", df_filtered)
     for id in range(len(df_filtered)):
         xmin, ymin, xmax, ymax, _, _, _ = df_filtered.iloc[id]
         xmin, ymin, xmax, ymax = int(xmin), int(ymin), int(xmax), int(ymax)
@@ -22,8 +23,6 @@ def detect_yolo(model, img):
         areas.append((area, box))
         centers.append((center, box))
     return areas, centers
-
-
 
 def show(img):
     cv2.imshow("img", img)
@@ -43,16 +42,10 @@ def detect_haarcascade(img):
         box = ((x,y), (x+w, x+h))
         face_areas.append((area, box))
         face_centers.append(((cx, cy), box))
-
-    print("face_areas: ", face_areas)
-    print("face_centers: ", face_centers)
-
     if len(face_areas) !=0:
         max_idx = face_areas.index(max(face_areas, key=lambda x:x[0]))
         face_area = [face_areas[max_idx]]
         face_center = [face_centers[max_idx]]
-        print("face_area: ", face_area)
-        print("face_center: ", face_center)
         return face_area, face_center
     else:
         return [], []
@@ -61,7 +54,6 @@ def detect_haarcascade(img):
 
 def draw_figures(img, centers):
     for center_ in centers:
-        # print("center_:", center_)
         center, bbox = center_
         start_point = bbox[0]
         end_point = bbox[1]
